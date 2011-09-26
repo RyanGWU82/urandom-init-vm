@@ -28,7 +28,7 @@ POOLSIZE=512
 case "$1" in
   start|"")
     log_action_begin_msg "Initializing random number generator"
-    TEMPFILE="/tmp/urandom.$$"
+    TEMPFILE=`mktemp /tmp/urandom.$$.XXXXXX`
     curl -Ss "http://www.random.org/cgi-bin/randbyte?nbytes=$POOLSIZE&format=f" > $TEMPFILE
     ES=$?
     if [ "$ES" -ne 0 ]; then

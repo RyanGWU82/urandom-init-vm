@@ -1,0 +1,61 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          urandom
+# Required-Start:    $remote_fs $network $named
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Seeds the /dev/urandom pseudo-random number generator
+# Description:       Seed the pseudo-RNG in /dev/urandom with a unique seed
+#                    from random.org. This script is a modification of
+#                    Ubuntu's stock /etc/init.d/urandom and is necessary when
+#                    launching multiple virtual machines from the same image.
+#                    Without an external seed, those virtual machines would
+#                    share a single seed.
+# X-Author:          Ryan Park <ryan@ryanpark.org>
+# X-Version:         1.0.0
+### END INIT INFO
+
+[ -c /dev/urandom ] || exit 0
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+POOLSIZE=512
+[ -f /proc/sys/kernel/random/poolsize ] && POOLSIZE="$(cat /proc/sys/kernel/random/poolsize)"
+. /lib/init/vars.sh
+
+. /lib/lsb/init-functions
+
+case "$1" in
+  start|"")
+    log_action_begin_msg "Initializing random number generator"
+    TEMPFILE="/tmp/urandom.$$"
+    curl -Ss "http://www.random.org/cgi-bin/randbyte?nbytes=$POOLSIZE&format=f" > $TEMPFILE
+    ES=$?
+    if [ "$ES" -ne 0 ]; then
+        log_action_end_msg $ES
+        exit $ES
+    fi
+    FILESIZE=$(stat -c%s "$TEMPFILE")
+    if [ "$FILESIZE" -ne "$POOLSIZE" ]; then
+        # Output common error messages to the console
+        egrep "^(You|Error)" $TEMPFILE
+        rm -f $TEMPFILE
+        log_action_end_msg 1
+        exit 1
+    fi
+    cat $TEMPFILE > /dev/urandom
+    rm -f $TEMPFILE
+    log_action_end_msg 0
+    ;;
+  stop|status)
+    exit 0
+    ;;
+  restart|reload|force-reload)
+    echo "Error: argument '$1' not supported" >&2
+    exit 3
+    ;;
+ *)
+    echo "Usage: urandom start|stop" >&2
+    exit 3
+    ;;
+esac

@@ -1,0 +1,17 @@
+### BEGIN INIT INFO
+# Provides:          urandom
+# Required-Start:    $remote_fs $network $named
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Seeds the /dev/urandom pseudo-random number generator
+# Description:       Seed the pseudo-RNG in /dev/urandom with a unique seed
+#                    from random.org. This script is a modification of
+#                    Ubuntu's stock /etc/init.d/urandom and is necessary when
+#                    launching multiple virtual machines from the same image.
+#                    Without an external seed, those virtual machines would
+#                    share a single seed.
+# X-Author:          Ryan Park <ryan@ryanpark.org>
+# X-Version:         1.0.0
+### END INIT INFO
+

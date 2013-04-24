@@ -12,6 +12,6 @@
 #                    Without an external seed, those virtual machines would
 #                    share a single seed.
 # X-Author:          Ryan Park <ryan@ryanpark.org>
-# X-Version:         1.0.0
+# X-Version:         1.0.1
 ### END INIT INFO
 

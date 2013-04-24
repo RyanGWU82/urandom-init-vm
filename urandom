@@ -13,7 +13,7 @@
 #                    Without an external seed, those virtual machines would
 #                    share a single seed.
 # X-Author:          Ryan Park <ryan@ryanpark.org>
-# X-Version:         1.0.0
+# X-Version:         1.0.1
 ### END INIT INFO
 
 [ -c /dev/urandom ] || exit 0
@@ -29,7 +29,7 @@ case "$1" in
   start|"")
     log_action_begin_msg "Initializing random number generator"
     TEMPFILE=`mktemp /tmp/urandom.$$.XXXXXX`
-    curl -Ss "http://www.random.org/cgi-bin/randbyte?nbytes=$POOLSIZE&format=f" > $TEMPFILE
+    curl -Ss -o "$TEMPFILE" "https://www.random.org/cgi-bin/randbyte?nbytes=$POOLSIZE&format=f"
     ES=$?
     if [ "$ES" -ne 0 ]; then
         log_action_end_msg $ES
